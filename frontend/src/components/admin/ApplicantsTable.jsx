@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { MoreHorizontal } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import {
@@ -19,7 +19,16 @@ const shortListingStatus = ["Accepted", "Rejected"];
 
 function ApplicantsTable() {
   const { applicants } = useSelector((store) => store.application);
+  const [filterInput, setFilterInput] = useState("");
   const [filterText, setFilterText] = useState("");
+
+  // Debounce the filter input
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setFilterText(filterInput);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [filterInput]);
 
   const statusHandler = async (status, id) => {
     try {
@@ -45,8 +54,8 @@ function ApplicantsTable() {
       <input
         type="text"
         placeholder="Filter by Contact Number..."
-        value={filterText}
-        onChange={(e) => setFilterText(e.target.value)}
+        value={filterInput}
+        onChange={(e) => setFilterInput(e.target.value)}
         className="p-2 border rounded-md w-1/4 mb-4"
       />
       <Table className="text-sm">
@@ -81,7 +90,7 @@ function ApplicantsTable() {
                     ? item.applicant.profile.skills.join(", ")
                     : "NA"}
                 </TableCell>
-                <TableCell className="p-2 text-blue-600">
+                <TableCell className="p-2">
                   {item?.applicant?.profile?.resume ? (
                     <a
                       className="text-blue-600 cursor-pointer"
