@@ -76,7 +76,8 @@ function ApplicantsTable() {
                   {item?.applicant?.phoneNumber || "NA"}
                 </TableCell>
                 <TableCell className="p-2">
-                  {item?.applicant?.profile?.skills?.length > 0
+                  {Array.isArray(item?.applicant?.profile?.skills) &&
+                  item.applicant.profile.skills.length > 0
                     ? item.applicant.profile.skills.join(", ")
                     : "NA"}
                 </TableCell>
@@ -95,7 +96,9 @@ function ApplicantsTable() {
                   )}
                 </TableCell>
                 <TableCell className="p-2">
-                  {item?.applicant?.createdAt?.split("T")[0] || "NA"}
+                  {item?.applicant?.createdAt
+                    ? item.applicant.createdAt.split("T")[0]
+                    : "NA"}
                 </TableCell>
                 <TableCell className="p-2 text-right">
                   <Popover>
