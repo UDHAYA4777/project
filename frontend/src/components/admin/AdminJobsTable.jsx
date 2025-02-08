@@ -51,7 +51,7 @@ const AdminJobsTable = () => {
 
     try {
       const response = await axios.delete(
-        `http://localhost:8000/api/v1/job/delete/${deleteJobId}`
+        `https://finalproject-1-ezj0.onrender.com/api/v1/job/delete/${deleteJobId}`
       );
       if (response.status === 200) {
         setFilterJobs((prevJobs) =>
