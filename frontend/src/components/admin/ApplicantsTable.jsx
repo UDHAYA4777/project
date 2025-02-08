@@ -18,7 +18,7 @@ import { Application_API_END_POINT } from "../../../utils/constant.js";
 const shortListingStatus = ["Accepted", "Rejected"];
 
 function ApplicantsTable() {
-  const { applicants } = useSelector((store) => store.application);
+  const { applicants = {} } = useSelector((store) => store.application); // Default value for applicants
   const [filterText, setFilterText] = useState("");
 
   const statusHandler = async (status, id) => {
@@ -39,6 +39,13 @@ function ApplicantsTable() {
   const filteredApplicants = (applicants?.applications || []).filter((item) =>
     String(item?.applicant?.phoneNumber || "").includes(filterText)
   );
+
+  if (
+    !Array.isArray(applicants.applications) ||
+    applicants.applications.length === 0
+  ) {
+    return <p className="text-center">No applicant data available.</p>;
+  }
 
   return (
     <div>
@@ -77,7 +84,7 @@ function ApplicantsTable() {
                 </TableCell>
                 <TableCell className="p-2">
                   {Array.isArray(item?.applicant?.profile?.skills) &&
-                  item.applicant.profile.skills.length > 0
+                  item?.applicant?.profile?.skills?.length > 0
                     ? item.applicant.profile.skills.join(", ")
                     : "NA"}
                 </TableCell>
