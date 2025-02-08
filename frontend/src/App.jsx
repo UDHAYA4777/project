@@ -1,6 +1,6 @@
 import React from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import ErrorBoundary from "./components/ErrorBoundary"; // Import ErrorBoundary
+import ErrorBoundary from "./components/admin/ErrorBoundary";
 import Navbar from "./components/shared/Navbar";
 import Login from "./components/auth/Login";
 import Signup from "./components/auth/Signup";
