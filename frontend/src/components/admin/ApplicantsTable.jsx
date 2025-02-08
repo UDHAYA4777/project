@@ -32,7 +32,7 @@ function ApplicantsTable() {
         toast.success(res.data.message);
       }
     } catch (error) {
-      toast.error(error.response.data.message);
+      toast.error(error.response?.data?.message || "Something went wrong!");
     }
   };
 
@@ -76,8 +76,9 @@ function ApplicantsTable() {
                   {item?.applicant?.phoneNumber || "NA"}
                 </TableCell>
                 <TableCell className="p-2">
-                  {item?.applicant?.profile?.skills?.length > 0
-                    ? item?.applicant?.profile?.skills.join(", ")
+                  {Array.isArray(item?.applicant?.profile?.skills) &&
+                  item.applicant.profile.skills.length > 0
+                    ? item.applicant.profile.skills.join(", ")
                     : "NA"}
                 </TableCell>
                 <TableCell className="p-2 text-blue-600">
@@ -107,7 +108,7 @@ function ApplicantsTable() {
                         <div
                           key={index}
                           onClick={() => statusHandler(status, item._id)}
-                          className="flex items-center my-1 cursor-pointer p-1 rounded hover:bg-gray-200 transition duration-200 ease-in-out "
+                          className="flex items-center my-1 cursor-pointer p-1 rounded hover:bg-gray-200 transition duration-200 ease-in-out"
                         >
                           <span>{status}</span>
                         </div>
