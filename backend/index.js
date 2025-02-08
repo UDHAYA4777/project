@@ -22,7 +22,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 const corsOptions = {
-    origin: 'https://finalproject-094t.onrender.com/',
+    origin: 'https://finalproject-1-ezj0.onrender.com/',
     credentials: true
 }
 app.use(cors(corsOptions));
