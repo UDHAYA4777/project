@@ -1,76 +1,48 @@
-import React, { useState, useEffect } from "react";
-import { MoreHorizontal } from "lucide-react";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import React, { useState } from "react";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
-  TableHeader,
   TableRow,
-} from "../ui/table";
-import { useSelector } from "react-redux";
-import { toast } from "sonner";
-import axios from "axios";
-import { Application_API_END_POINT } from "../../../utils/constant.js";
+} from "@mui/material";
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@/components/ui/popover";
+import { MoreHorizontal } from "lucide-react";
 
-const shortListingStatus = ["Accepted", "Rejected"];
-
-function ApplicantsTable() {
-  const { applicants } = useSelector((store) => store.application);
-  const [filterInput, setFilterInput] = useState("");
+const ApplicantsTable = ({ applicants, shortListingStatus, statusHandler }) => {
   const [filterText, setFilterText] = useState("");
 
-  // Debounce the filter input
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setFilterText(filterInput);
-    }, 300);
-    return () => clearTimeout(timer);
-  }, [filterInput]);
-
-  const statusHandler = async (status, id) => {
-    try {
-      axios.defaults.withCredentials = true;
-      const res = await axios.post(
-        `${Application_API_END_POINT}/status/${id}/update`,
-        { status }
-      );
-      if (res.data.success) {
-        toast.success(res.data.message);
-      }
-    } catch (error) {
-      toast.error(error.response?.data?.message || "Something went wrong!");
-    }
-  };
-
-  const filteredApplicants = applicants?.applications?.filter((item) =>
+  const filteredApplicants = (applicants?.applications || []).filter((item) =>
     String(item?.applicant?.phoneNumber || "").includes(filterText)
   );
 
   return (
-    <div>
+    <div className="p-4">
       <input
         type="text"
-        placeholder="Filter by Contact Number..."
-        value={filterInput}
-        onChange={(e) => setFilterInput(e.target.value)}
-        className="p-2 border rounded-md w-1/4 mb-4"
+        placeholder="Filter by contact number"
+        value={filterText}
+        onChange={(e) => setFilterText(e.target.value)}
+        className="p-2 mb-4 border rounded w-full"
       />
-      <Table className="text-sm">
-        <TableCaption>A list of your recent applied users</TableCaption>
-        <TableHeader>
+
+      <Table>
+        <TableHead>
           <TableRow>
-            <TableHead className="p-2">Full Name</TableHead>
-            <TableHead className="p-2">Email</TableHead>
-            <TableHead className="p-2">Contact</TableHead>
-            <TableHead className="p-2">Skills</TableHead>
-            <TableHead className="p-2">Resume</TableHead>
-            <TableHead className="p-2">Date</TableHead>
-            <TableHead className="p-2 text-right">Action</TableHead>
+            <TableCell className="font-bold">Name</TableCell>
+            <TableCell className="font-bold">Email</TableCell>
+            <TableCell className="font-bold">Contact Number</TableCell>
+            <TableCell className="font-bold">Skills</TableCell>
+            <TableCell className="font-bold">Resume</TableCell>
+            <TableCell className="font-bold">Applied Date</TableCell>
+            <TableCell className="font-bold text-right">Actions</TableCell>
           </TableRow>
-        </TableHeader>
+        </TableHead>
+
         <TableBody>
           {filteredApplicants?.length > 0 ? (
             filteredApplicants.map((item) => (
@@ -85,8 +57,7 @@ function ApplicantsTable() {
                   {item?.applicant?.phoneNumber || "NA"}
                 </TableCell>
                 <TableCell className="p-2">
-                  {Array.isArray(item?.applicant?.profile?.skills) &&
-                  item.applicant.profile.skills.length > 0
+                  {(item?.applicant?.profile?.skills || []).length > 0
                     ? item.applicant.profile.skills.join(", ")
                     : "NA"}
                 </TableCell>
@@ -94,18 +65,18 @@ function ApplicantsTable() {
                   {item?.applicant?.profile?.resume ? (
                     <a
                       className="text-blue-600 cursor-pointer"
-                      href={item?.applicant?.profile?.resume}
+                      href={item.applicant.profile.resume}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      {item?.applicant?.profile?.resumeOriginalName}
+                      {item.applicant.profile.resumeOriginalName}
                     </a>
                   ) : (
                     "NA"
                   )}
                 </TableCell>
                 <TableCell className="p-2">
-                  {item?.applicant?.createdAt.split("T")[0]}
+                  {item?.applicant?.createdAt?.split("T")[0] || "NA"}
                 </TableCell>
                 <TableCell className="p-2 text-right">
                   <Popover>
@@ -138,6 +109,6 @@ function ApplicantsTable() {
       </Table>
     </div>
   );
-}
+};
 
 export default ApplicantsTable;
