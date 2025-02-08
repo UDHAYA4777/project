@@ -15,7 +15,7 @@ import path from "path";
 dotenv.config({});
 const app = express();
 
-const _dirname = path.resolve();;
+const _dirname = path.resolve();
 
 //middleware
 app.use(express.json());
