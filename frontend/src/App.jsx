@@ -1,6 +1,4 @@
-import React from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import ErrorBoundary from "./components/admin/ErrorBoundary";
 import Navbar from "./components/shared/Navbar";
 import Login from "./components/auth/Login";
 import Signup from "./components/auth/Signup";
@@ -8,7 +6,7 @@ import Home from "./components/Home";
 import Jobs from "./components/Jobs";
 import Browse from "./components/Browse";
 import Profile from "./components/Profile";
-import JobDescription from "./components/Jobdescription";
+import JobDescription from "./components/JobDescription";
 import Companies from "./components/admin/Companies";
 import CompanyCreate from "./components/admin/CompanyCreate";
 import CompanySetup from "./components/admin/CompanySetup";
@@ -18,14 +16,35 @@ import Applicants from "./components/admin/Applicants";
 import ProtectedRoute from "./components/admin/ProtectedRoute";
 
 const appRouter = createBrowserRouter([
-  { path: "/", element: <Home /> },
-  { path: "/login", element: <Login /> },
-  { path: "/signup", element: <Signup /> },
-  { path: "/jobs", element: <Jobs /> },
-  { path: "/description/:id", element: <JobDescription /> },
-  { path: "/browse", element: <Browse /> },
-  { path: "/profile", element: <Profile /> },
-  // Admin routes
+  {
+    path: "/",
+    element: <Home />,
+  },
+  {
+    path: "/login",
+    element: <Login />,
+  },
+  {
+    path: "/signup",
+    element: <Signup />,
+  },
+  {
+    path: "/jobs",
+    element: <Jobs />,
+  },
+  {
+    path: "/description/:id",
+    element: <JobDescription />,
+  },
+  {
+    path: "/browse",
+    element: <Browse />,
+  },
+  {
+    path: "/profile",
+    element: <Profile />,
+  },
+  //admin k liye yha se start hoga
   {
     path: "/admin/companies",
     element: (
@@ -59,7 +78,7 @@ const appRouter = createBrowserRouter([
     ),
   },
   {
-    path: "/admin/jobs/create",
+    path: "admin/jobs/create",
     element: (
       <ProtectedRoute>
         <PostJob />
@@ -67,7 +86,7 @@ const appRouter = createBrowserRouter([
     ),
   },
   {
-    path: "/admin/jobs/:id/applicants",
+    path: "admin/jobs/:id/applicants",
     element: (
       <ProtectedRoute>
         <Applicants />
@@ -78,9 +97,9 @@ const appRouter = createBrowserRouter([
 
 function App() {
   return (
-    <ErrorBoundary>
+    <>
       <RouterProvider router={appRouter} />
-    </ErrorBoundary>
+    </>
   );
 }
 

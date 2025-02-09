@@ -18,7 +18,7 @@ import { Application_API_END_POINT } from "../../../utils/constant.js";
 const shortListingStatus = ["Accepted", "Rejected"];
 
 function ApplicantsTable() {
-  const { applicants = {} } = useSelector((store) => store.application); // Default value for applicants
+  const { applicants } = useSelector((store) => store.application);
   const [filterText, setFilterText] = useState("");
 
   const statusHandler = async (status, id) => {
@@ -32,20 +32,13 @@ function ApplicantsTable() {
         toast.success(res.data.message);
       }
     } catch (error) {
-      toast.error(error?.response?.data?.message || "An error occurred");
+      toast.error(error.response.data.message);
     }
   };
 
-  const filteredApplicants = (applicants?.applications || []).filter((item) =>
+  const filteredApplicants = applicants?.applications?.filter((item) =>
     String(item?.applicant?.phoneNumber || "").includes(filterText)
   );
-
-  if (
-    !Array.isArray(applicants.applications) ||
-    applicants.applications.length === 0
-  ) {
-    return <p className="text-center">No applicant data available.</p>;
-  }
 
   return (
     <div>
@@ -70,9 +63,9 @@ function ApplicantsTable() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {filteredApplicants.length > 0 ? (
+          {filteredApplicants?.length > 0 ? (
             filteredApplicants.map((item) => (
-              <TableRow key={item?._id}>
+              <TableRow key={item._id}>
                 <TableCell className="p-2">
                   {item?.applicant?.fullName || "NA"}
                 </TableCell>
@@ -83,29 +76,26 @@ function ApplicantsTable() {
                   {item?.applicant?.phoneNumber || "NA"}
                 </TableCell>
                 <TableCell className="p-2">
-                  {Array.isArray(item?.applicant?.profile?.skills) &&
-                  item?.applicant?.profile?.skills?.length > 0
-                    ? item.applicant.profile.skills.join(", ")
+                  {item?.applicant?.profile?.skills?.length > 0
+                    ? item?.applicant?.profile?.skills.join(", ")
                     : "NA"}
                 </TableCell>
-                <TableCell className="p-2">
+                <TableCell className="p-2 text-blue-600">
                   {item?.applicant?.profile?.resume ? (
                     <a
                       className="text-blue-600 cursor-pointer"
-                      href={item.applicant.profile.resume}
+                      href={item?.applicant?.profile?.resume}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      {item.applicant.profile.resumeOriginalName}
+                      {item?.applicant?.profile?.resumeOriginalName}
                     </a>
                   ) : (
                     "NA"
                   )}
                 </TableCell>
                 <TableCell className="p-2">
-                  {item?.applicant?.createdAt
-                    ? item.applicant.createdAt.split("T")[0]
-                    : "NA"}
+                  {item?.applicant?.createdAt.split("T")[0]}
                 </TableCell>
                 <TableCell className="p-2 text-right">
                   <Popover>
@@ -117,7 +107,7 @@ function ApplicantsTable() {
                         <div
                           key={index}
                           onClick={() => statusHandler(status, item._id)}
-                          className="flex items-center my-1 cursor-pointer p-1 rounded hover:bg-gray-200 transition duration-200 ease-in-out"
+                          className="flex items-center my-1 cursor-pointer p-1 rounded hover:bg-gray-200 transition duration-200 ease-in-out "
                         >
                           <span>{status}</span>
                         </div>

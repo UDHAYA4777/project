@@ -16,43 +16,41 @@ import axios from "axios";
 import { toast } from "react-toastify";
 
 const AdminJobsTable = () => {
-  const { allAdminJobs = [], searchJobByText = "" } = useSelector(
-    (store) => store.job
-  );
-  const [filterJobs, setFilterJobs] = useState([]);
+  const { allAdminJobs, searchJobByText } = useSelector((store) => store.job);
+  const [filterJobs, setFilterJobs] = useState(allAdminJobs);
   const [deleteJobId, setDeleteJobId] = useState(null);
   const [deleteConfirmation, setDeleteConfirmation] = useState("");
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const navigate = useNavigate();
 
+  // Filter jobs based on the search text
   useEffect(() => {
-    const filteredJobs = allAdminJobs.filter((job) => {
-      if (!searchJobByText) return true;
-      return job?.company?.name
-        ?.toLowerCase()
-        .includes(searchJobByText.toLowerCase());
-    });
-    setFilterJobs(filteredJobs);
+    if (allAdminJobs.length > 0) {
+      const filteredJobs = allAdminJobs.filter((job) => {
+        if (!searchJobByText) return true;
+        return job?.company?.name
+          ?.toLowerCase()
+          .includes(searchJobByText.toLowerCase());
+      });
+      setFilterJobs(filteredJobs);
+    }
   }, [allAdminJobs, searchJobByText]);
 
+  // Handle job deletion with confirmation
   const handleDelete = async () => {
     const jobToDelete = filterJobs.find((job) => job._id === deleteJobId);
-    if (!jobToDelete) {
-      toast.error("Job not found.");
-      return;
-    }
-
-    if (deleteConfirmation !== jobToDelete.title) {
+    if (deleteConfirmation !== jobToDelete?.title) {
       toast.error(
-        "Job title does not match. Please enter the correct job title."
+        "Job name does not match. Please enter the correct job name."
       );
       return;
     }
 
     try {
       const response = await axios.delete(
-        `https://finalproject-1-ezj0.onrender.com/api/v1/job/delete/${deleteJobId}`
+        `http://localhost:8000/api/v1/job/delete/${deleteJobId}`
       );
+
       if (response.status === 200) {
         setFilterJobs((prevJobs) =>
           prevJobs.filter((job) => job._id !== deleteJobId)
@@ -63,8 +61,10 @@ const AdminJobsTable = () => {
         toast.error("Failed to delete the job.");
       }
     } catch (error) {
-      console.error("Error deleting job:", error);
-      toast.error("An error occurred while deleting the job.");
+      console.error("Error deleting job:", error.response || error.message);
+      toast.error(
+        `An error occurred: ${error.response?.data?.message || error.message}`
+      );
     }
   };
 
@@ -92,56 +92,46 @@ const AdminJobsTable = () => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {filterJobs.length > 0 ? (
-            filterJobs.map((job) => (
-              <TableRow key={job._id}>
-                <TableCell>{job?.company?.name || "N/A"}</TableCell>
-                <TableCell>{job?.title || "N/A"}</TableCell>
-                <TableCell>{job?.createdAt?.split("T")[0] || "N/A"}</TableCell>
-                <TableCell>{formatSalary(job.jobType, job.salary)}</TableCell>
-                <TableCell>
-                  <Popover>
-                    <PopoverTrigger>
-                      <MoreHorizontal />
-                    </PopoverTrigger>
-                    <PopoverContent className="w-32">
-                      <div
-                        onClick={() => navigate(`/admin/companies/${job._id}`)}
-                        className="flex items-center gap-2 w-fit cursor-pointer"
-                      >
-                        <Edit2 className="w-4" />
-                        <span>Edit</span>
-                      </div>
-                      <div
-                        onClick={() =>
-                          navigate(`/admin/jobs/${job._id}/applicants`)
-                        }
-                        className="flex items-center w-fit gap-2 cursor-pointer mt-2"
-                      >
-                        <Eye className="w-4" />
-                        <span>Applicants</span>
-                      </div>
-                    </PopoverContent>
-                  </Popover>
-                </TableCell>
-                <TableCell>
-                  <div
-                    onClick={() => handleDeleteClick(job._id)}
-                    className="flex items-center w-fit gap-2 cursor-pointer mt-2 text-red-600"
-                  >
-                    <Trash2 className="w-4 h-10" />
-                    <span>Delete</span>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))
-          ) : (
-            <TableRow>
-              <TableCell colSpan={6} className="text-center">
-                No jobs found.
+          {filterJobs?.map((job) => (
+            <TableRow key={job._id}>
+              <TableCell>{job?.company?.name}</TableCell>
+              <TableCell>{job?.title}</TableCell>
+              <TableCell>{job?.createdAt.split("T")[0]}</TableCell>
+              <TableCell>{formatSalary(job.jobType, job.salary)}</TableCell>
+              <TableCell>
+                <Popover>
+                  <PopoverTrigger>
+                    <MoreHorizontal />
+                  </PopoverTrigger>
+                  <PopoverContent className="w-32">
+                    <div
+                      onClick={() => navigate(`/admin/companies/${job._id}`)}
+                      className="flex items-center gap-2 w-fit cursor-pointer"
+                    >
+                      <Edit2 className="w-4" />
+                      <span>Edit</span>
+                    </div>
+                    <div
+                      onClick={() =>
+                        navigate(`/admin/jobs/${job._id}/applicants`)
+                      }
+                      className="flex items-center w-fit gap-2 cursor-pointer mt-2"
+                    >
+                      <Eye className="w-4" />
+                      <span>Applicants</span>
+                    </div>
+                  </PopoverContent>
+                </Popover>
               </TableCell>
+              <div
+                onClick={() => handleDeleteClick(job._id)}
+                className="flex items-center w-fit gap-2 cursor-pointer mt-2 text-red-600"
+              >
+                <Trash2 className="w-4 h-10" />
+                <span>Delete</span>
+              </div>
             </TableRow>
-          )}
+          ))}
         </TableBody>
       </Table>
 
