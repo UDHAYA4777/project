@@ -1,24 +1,25 @@
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { setSingleJob } from "../../redux/jobSlice";
-import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import {
   Application_API_END_POINT,
   JOB_API_END_POINT,
 } from "../../utils/constant.js";
+import CompanyDetails from "./CompanyDetails";
 
 const JobDescription = () => {
   const { singleJob } = useSelector((store) => store.job);
   const { user } = useSelector((store) => store.auth);
-  const isIntiallyApplied =
+  const isInitiallyApplied =
     singleJob?.applications.some(
       (application) => application.applicant === user?._id
     ) || false;
-  const [isApplied, setIsApplied] = useState(isIntiallyApplied);
+  const [isApplied, setIsApplied] = useState(isInitiallyApplied);
   const params = useParams();
   const jobId = params.id;
   const dispatch = useDispatch();
@@ -32,16 +33,16 @@ const JobDescription = () => {
       console.log(res.data);
       if (res.data.success) {
         setIsApplied(true);
-        const updateSinglejob = {
+        const updatedSingleJob = {
           ...singleJob,
           applications: [...singleJob.applications, { applicant: user?._id }],
         };
-        dispatch(setSingleJob(updateSinglejob));
+        dispatch(setSingleJob(updatedSingleJob));
         toast.success(res.data.message);
       }
     } catch (error) {
       console.log(error);
-      toast.error(error.response.data.message);
+      toast.error(error.response?.data?.message || "Something went wrong");
     }
   };
 
@@ -98,6 +99,8 @@ const JobDescription = () => {
         </Button>
       </div>
 
+      {/* Pass companyId to CompanyDetails */}
+
       <h1 className="border-b-2 border-b-gray-300 font-medium py-4">
         Job Description
       </h1>
@@ -152,7 +155,7 @@ const JobDescription = () => {
         <h1 className="font-bold my-1">
           Posted Date:
           <span className="pl-4 font-normal text-gray-800">
-            {singleJob?.createdAt.split("T")[0]}
+            {singleJob?.createdAt?.split("T")[0]}
           </span>
         </h1>
       </div>

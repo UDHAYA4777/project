@@ -37,7 +37,7 @@ const Navbar = () => {
         {/* Logo Section */}
         <div>
           <h1 className="text-2xl text-red-600 font-bold">
-            PERI <span className="text-2xl text-black">CodeCareer</span>
+            PERI <span className="text-2xl text-black">ITCareer</span>
           </h1>
         </div>
 

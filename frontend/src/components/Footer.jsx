@@ -22,7 +22,7 @@ const Footer = () => {
             <div className="mb-4 md:mb-0">
               <h2 className="text-xl font-bold">
                 <span className="text-red-600">PERI </span>
-                <span>CodeCareer </span>
+                <span>ITCareer </span>
               </h2>
               <p className="text-sm">
                 Connecting students to tech careers, study materials, and
