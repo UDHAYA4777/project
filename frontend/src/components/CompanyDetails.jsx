@@ -1,49 +1,95 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { Company_API_END_POINT } from "../../utils/constant.js";
 
-const CompanyDetails = () => {
-  const [companyDetails, setCompanyDetails] = useState(null);
-  const [error, setError] = useState(null);
+const CompanyDetails = ({ companyId }) => {
+  const [company, setCompany] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchCompanyDetails = async () => {
-      const token = localStorage.getItem("token"); // Retrieve token if required
+    if (companyId) {
+      console.log("Fetching company with ID:", companyId);
 
-      try {
-        const response = await axios.get(
-          "http://localhost:8000/api/v1/job/get/67bad9f777da4738f04f6dfe",
-          {
-            headers: token ? { Authorization: `Bearer ${token}` } : {}, // Only send token if available
+      const fetchCompanyDetails = async () => {
+        try {
+          const res = await axios(`${Company_API_END_POINT}/get/${companyId}`, {
+            withCredentials: true, // Ensure cookies/session are sent
+          });
+
+          if (res.data.success) {
+            setCompany(res.data.company);
+          } else {
+            setError("Company not found");
           }
-        );
-        setCompanyDetails(response.data);
-      } catch (error) {
-        console.error("Error fetching company details:", error);
-        setError(
-          error.response?.status === 401
-            ? "Unauthorized access. Please log in."
-            : "Failed to fetch company details."
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
+        } catch (error) {
+          if (error.response?.status === 401) {
+            setError("Unauthorized access. Please login to view this company.");
+          } else {
+            setError("Error fetching company data: " + error.message);
+          }
+        } finally {
+          setLoading(false);
+        }
+      };
 
-    fetchCompanyDetails();
-  }, []);
+      fetchCompanyDetails();
+    }
+  }, [companyId]);
+
+  // If loading, show loading state
+  if (loading) {
+    return <div>Loading Company Details...</div>;
+  }
+
+  // If there's an error, show error message
+  if (error) {
+    return <div>{error}</div>;
+  }
 
   return (
-    <div>
-      <h2>Company Details</h2>
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      {loading ? (
-        <p>Loading...</p>
-      ) : companyDetails ? (
-        <pre>{JSON.stringify(companyDetails, null, 2)}</pre>
-      ) : (
-        <p>No details available.</p>
-      )}
+    <div className="max-w-5xl mx-auto my-10">
+      <h1 className="border-b-2 border-b-gray-300 font-medium py-4">
+        Company Details
+      </h1>
+
+      <div>
+        <h1 className="font-bold my-1">
+          Company Name:
+          <span className="pl-4 font-normal text-gray-800">
+            {company?.name}
+          </span>
+        </h1>
+
+        <h1 className="font-bold my-1">
+          Location:
+          <span className="pl-4 font-normal text-gray-800">
+            {company?.location}
+          </span>
+        </h1>
+
+        <h1 className="font-bold my-1">
+          Company Description:
+          <span className="pl-4 font-normal text-gray-800">
+            {company?.description}
+          </span>
+        </h1>
+
+        {/* Website Section */}
+        <h1 className="font-bold my-1">
+          Website:
+          <span className="pl-4 font-normal text-gray-800">
+            <a
+              href={company?.website}
+              className="text-blue-500 underline hover:text-blue-700"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {company?.website}
+            </a>
+          </span>
+        </h1>
+      </div>
     </div>
   );
 };

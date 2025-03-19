@@ -11,6 +11,7 @@ const Applicants = () => {
   const params = useParams();
   const dispatch = useDispatch();
   const { applicants } = useSelector((store) => store.application);
+
   useEffect(() => {
     const fetchApplicants = async () => {
       try {
@@ -20,20 +21,26 @@ const Applicants = () => {
         );
         console.log(res.data);
         if (res.data.success) {
-          dispatch(setAllApplicants(res.data.job));
+          dispatch(setAllApplicants(res.data.job)); // Ensure you're passing the right data
         }
       } catch (error) {
         console.log(error);
       }
     };
-    fetchApplicants();
-  }, []);
+    if (params.id) {
+      fetchApplicants(); // Fetch applicants when the job ID is available
+    }
+  }, [params.id, dispatch]);
+
+  // Safely check applicants and applications array
+  const applicationsCount = applicants?.applications?.length || 0; // Default to 0 if undefined
+
   return (
     <div>
       <Navbar />
       <div className="max-w-6xl mx-auto">
         <h1 className="font-bold text-xl my-5">
-          Applicants {applicants.applications.length}
+          Applicants: {applicationsCount}
         </h1>
         <ApplicantsTable />
       </div>

@@ -24,7 +24,7 @@ const Profile = () => {
           <div className="flex items-center gap-4">
             <Avatar className="h-24 w-24">
               <AvatarImage
-                src="https://png.pngtree.com/png-vector/20220825/ourmid/pngtree-creative-logo-design-vector-free-png-png-image_6123042.png"
+                src={user?.profile?.profilePhoto}
                 alt="Avatar"
               ></AvatarImage>
             </Avatar>

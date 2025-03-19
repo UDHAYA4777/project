@@ -100,6 +100,7 @@ const JobDescription = () => {
       </div>
 
       {/* Pass companyId to CompanyDetails */}
+      <CompanyDetails companyId={singleJob?.company} />
 
       <h1 className="border-b-2 border-b-gray-300 font-medium py-4">
         Job Description
@@ -118,7 +119,6 @@ const JobDescription = () => {
             {singleJob?.location}
           </span>
         </h1>
-
         {/* Check if requirements exist and display */}
         <h1 className="font-bold my-1">
           Requirements:
@@ -128,13 +128,14 @@ const JobDescription = () => {
               : "Not provided"}
           </span>
         </h1>
-
         <h1 className="font-bold my-1">
           Description:
           <span className="pl-4 font-normal text-gray-800">
             {singleJob?.description}
           </span>
         </h1>
+
+        {/* Display the company ID */}
 
         <h1 className="font-bold my-1">
           Salary:
@@ -144,14 +145,12 @@ const JobDescription = () => {
               : `${singleJob?.salary} LPA`}
           </span>
         </h1>
-
         <h1 className="font-bold my-1">
           Total Applicants:
           <span className="pl-4 font-normal text-gray-800">
             {singleJob?.applications?.length}
           </span>
         </h1>
-
         <h1 className="font-bold my-1">
           Posted Date:
           <span className="pl-4 font-normal text-gray-800">

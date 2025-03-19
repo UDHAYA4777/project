@@ -8,12 +8,17 @@ import axios from "axios";
 import { Company_API_END_POINT } from "../../../utils/constant.js";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
-import { useSelector } from "react-redux";
 import useGetCompanyById from "@/hooks/useGetCompanyById";
 
 const CompanySetup = () => {
   const params = useParams();
-  useGetCompanyById(params.id);
+  const navigate = useNavigate();
+  const {
+    singleCompany,
+    loading: companyLoading,
+    error,
+  } = useGetCompanyById(params.id);
+
   const [input, setInput] = useState({
     name: "",
     description: "",
@@ -21,10 +26,21 @@ const CompanySetup = () => {
     location: "",
     file: null,
   });
-  const { singleCompany } = useSelector((store) => store.company);
 
-  const navigate = useNavigate();
+  useEffect(() => {
+    if (singleCompany) {
+      setInput({
+        name: singleCompany.name || "",
+        description: singleCompany.description || "",
+        website: singleCompany.website || "",
+        location: singleCompany.location || "",
+        file: singleCompany.file || null,
+      });
+    }
+  }, [singleCompany]);
+
   const [loading, setLoading] = useState(false);
+
   const changeEventHandler = (e) => {
     setInput({ ...input, [e.target.name]: e.target.value });
   };
@@ -33,8 +49,13 @@ const CompanySetup = () => {
     const file = e.target.files?.[0];
     setInput({ ...input, file });
   };
+
   const submitHandler = async (e) => {
     e.preventDefault();
+    if (!input.name || !input.description) {
+      toast.error("Please fill in all required fields");
+      return;
+    }
     const formData = new FormData();
     formData.append("name", input.name);
     formData.append("description", input.description);
@@ -61,20 +82,24 @@ const CompanySetup = () => {
       }
     } catch (error) {
       console.log(error);
-      toast.error(error?.response?.data?.message);
+      toast.error(error?.response?.data?.message || "An error occurred.");
     } finally {
       setLoading(false);
     }
   };
-  useEffect(() => {
-    setInput({
-      name: singleCompany.name || "",
-      description: singleCompany.description || "",
-      website: singleCompany.website || "",
-      location: singleCompany.location || "",
-      file: singleCompany.file || null,
-    });
-  }, [singleCompany]);
+
+  if (companyLoading) {
+    return <div>Loading company details...</div>;
+  }
+
+  if (error) {
+    return (
+      <div>
+        Error fetching company details:{" "}
+        {error || "An unexpected error occurred"}
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -143,8 +168,7 @@ const CompanySetup = () => {
           </div>
 
           {loading ? (
-            <Button className="w-full my-4">
-              {" "}
+            <Button className="w-full my-4" disabled>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               Please wait
             </Button>
